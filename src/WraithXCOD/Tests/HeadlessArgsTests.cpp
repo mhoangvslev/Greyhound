@@ -40,6 +40,12 @@ int main()
     CHECK(!Parse({ "g", "--headless", "--offline", "--out", "o" }, O, E) && E.find("--zone-dir") != std::string::npos);
     CHECK(Parse({ "g", "--headless", "--out", "o" }, O, E) && !O.Offline);
 
+    CHECK(Parse({ "g", "--headless", "--type", "model", "--out", "o", "--formats", "semodel,cast" }, O, E) && O.Formats.size() == 2);
+    CHECK(!Parse({ "g", "--headless", "--type", "model", "--out", "o", "--formats", "seanim" }, O, E) && E.find("applies") != std::string::npos);
+    CHECK(!Parse({ "g", "--headless", "--type", "anim", "--out", "o", "--formats", "semodel" }, O, E));
+    CHECK(Parse({ "g", "--headless", "--type", "anim", "--out", "o", "--formats", "seanim,semodel" }, O, E));
+    CHECK(Parse({ "g", "--headless", "--type", "image", "--out", "o", "--formats", "seanim" }, O, E));
+
     std::printf(Fails ? "%d FAILED\n" : "all passed\n", Fails);
     return Fails ? 1 : 0;
 }

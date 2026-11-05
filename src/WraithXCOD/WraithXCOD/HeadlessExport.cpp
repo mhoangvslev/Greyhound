@@ -146,6 +146,15 @@ int HeadlessExport::Run(const HeadlessOptions& O)
     SettingsManager::SetSetting("export_seanim", Has("seanim") ? "true" : "false");
     SettingsManager::SetSetting("export_castanim", Has("cast") ? "true" : "false");
     SettingsManager::SetSetting("export_directxanim", "false");
+    // Models: same rule, only what was asked for (the GUI's remembered flags would otherwise decide). Cast is "cast" for both types.
+    SettingsManager::SetSetting("export_semodel", Has("semodel") ? "true" : "false");
+    SettingsManager::SetSetting("export_castmdl", Has("cast") ? "true" : "false");
+    SettingsManager::SetSetting("export_ma", Has("ma") ? "true" : "false");
+    SettingsManager::SetSetting("export_obj", Has("obj") ? "true" : "false");
+    SettingsManager::SetSetting("export_glb", Has("glb") ? "true" : "false");
+    SettingsManager::SetSetting("export_smd", Has("smd") ? "true" : "false");
+    SettingsManager::SetSetting("export_xna", "false");
+    SettingsManager::SetSetting("export_xmexport", "false");
     SettingsManager::SetSetting("skipprevanim", O.Overwrite ? "false" : "true");
     SettingsManager::SetSetting("skipprevmodel", O.Overwrite ? "false" : "true");
     SettingsManager::SetSetting("skipprevimg", O.Overwrite ? "false" : "true");
