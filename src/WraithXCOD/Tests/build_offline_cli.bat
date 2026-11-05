@@ -5,4 +5,4 @@ call "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\B
 set OUT=%~1
 if "%OUT%"=="" set OUT=%TEMP%\hh_tests
 if not exist "%OUT%" mkdir "%OUT%"
-cl /nologo /EHsc /std:c++17 /O2 /Fo"%OUT%\\" /Fe"%OUT%\greyhound_offline.exe" "%~dp0OfflineCli.cpp" || exit /b 1
+cl /nologo /EHsc /std:c++14 /O2 /Fo"%OUT%\\" /Fe"%OUT%\greyhound_offline.exe" "%~dp0OfflineCli.cpp" || exit /b 1

@@ -14,7 +14,13 @@
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
-#include <filesystem>
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h> // FindFirstFileA: the GUI project builds as C++14 (no <filesystem>)
 #include <fstream>
 #include <map>
 #include <string>
@@ -309,16 +315,20 @@ namespace BO3FF
     // The .ff files of ZoneDir (sorted), optionally only those whose zone name (file name without .ff) is in Names
     inline std::vector<std::string> FindZoneFiles(const std::string& ZoneDir, const std::vector<std::string>& Names)
     {
-        namespace fs = std::filesystem;
         std::vector<std::string> Out;
-        std::error_code Ec;
-        for (auto& E : fs::directory_iterator(ZoneDir, Ec))
+        WIN32_FIND_DATAA FD;
+        HANDLE H = FindFirstFileA((ZoneDir + "\\*.ff").c_str(), &FD);
+        if (H == INVALID_HANDLE_VALUE) return Out;
+        do
         {
-            if (!E.is_regular_file() || E.path().extension() != ".ff") continue;
-            const std::string Stem = E.path().stem().string();
+            if (FD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+            std::string File = FD.cFileName;
+            if (File.size() < 4 || File.compare(File.size() - 3, 3, ".ff") != 0) continue; // "*.ff" also matches ".ffx" short names
+            const std::string Stem = File.substr(0, File.size() - 3);
             if (!Names.empty() && std::find(Names.begin(), Names.end(), Stem) == Names.end()) continue;
-            Out.push_back(E.path().string());
-        }
+            Out.push_back(ZoneDir + "\\" + File);
+        } while (FindNextFileA(H, &FD));
+        FindClose(H);
         std::sort(Out.begin(), Out.end());
         return Out;
     }
