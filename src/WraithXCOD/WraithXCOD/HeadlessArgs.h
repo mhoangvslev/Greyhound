@@ -36,7 +36,7 @@ struct HeadlessOptions
     std::string OutDir;
     // Where the JSON report is written (default <OutDir>/export_report.json)
     std::string ReportPath;
-    // Formats for anims: seanim, cast
+    // Formats: anims seanim|cast; models semodel|cast|ma|obj|glb|smd (each type ignores the others, at least one must apply to --type)
     std::vector<std::string> Formats = { "seanim" };
     // Seconds to wait for the game process / for matching assets to appear
     uint32_t WaitSeconds = 0;
@@ -105,6 +105,20 @@ namespace HeadlessArgs
         return Out;
     }
 
+    // Does at least one requested format exist for this asset type? (images/sounds/rawfiles/materials have one fixed output)
+    inline bool FormatsApply(const std::string& Type, const std::vector<std::string>& Formats)
+    {
+        static const char* Anim[] = { "seanim", "cast" };
+        static const char* Model[] = { "semodel", "cast", "ma", "obj", "glb", "smd" };
+        if (Type != "anim" && Type != "model") return true;
+        for (auto& F : Formats)
+        {
+            auto* B = Type == "anim" ? Anim : Model; size_t N = Type == "anim" ? 2 : 6;
+            if (std::find(B, B + N, F) != B + N) return true;
+        }
+        return false;
+    }
+
     // Returns false and fills Error on a bad command line. Options.Enabled stays false when
     // neither --headless nor --export is present (the GUI starts as before).
     inline bool Parse(const std::vector<std::string>& Args, HeadlessOptions& O, std::string& Error)
@@ -144,9 +158,11 @@ namespace HeadlessArgs
         if (std::find(std::begin(Types), std::end(Types), O.AssetType) == std::end(Types)) { Error = "unknown --type " + O.AssetType; return false; }
         if (O.Offline && O.ZoneDir.empty()) { Error = "--offline needs --zone-dir <game dir>/zone"; return false; }
         if (O.OutDir.empty() && !O.ListOnly && !O.Offline) { Error = "--out is required"; return false; }
+        static const char* Known[] = { "seanim", "cast", "semodel", "ma", "obj", "glb", "smd" };
         for (auto& F : O.Formats)
-            if (F != "seanim" && F != "cast") { Error = "unknown format " + F + " (seanim, cast)"; return false; }
+            if (std::find(std::begin(Known), std::end(Known), F) == std::end(Known)) { Error = "unknown format " + F + " (seanim, cast, semodel, ma, obj, glb, smd)"; return false; }
         if (O.Formats.empty()) { Error = "--formats is empty"; return false; }
+        if (!O.Offline && !FormatsApply(O.AssetType, O.Formats)) { Error = "no --formats entry applies to --type " + O.AssetType; return false; }
         if (O.ReportPath.empty() && !O.OutDir.empty()) O.ReportPath = O.OutDir + "\\export_report.json";
         return true;
     }
