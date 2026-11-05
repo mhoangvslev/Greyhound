@@ -4,6 +4,7 @@
 // With GREYHOUND_BO3_ZONE_DIR set, also checks the retail core_common.ff (read only; skipped otherwise).
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include "../WraithXCOD/BO3FastFile.h"
 
 static int Fails = 0, Skipped = 0;
