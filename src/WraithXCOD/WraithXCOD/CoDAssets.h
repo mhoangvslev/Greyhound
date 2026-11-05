@@ -280,7 +280,9 @@ private:
     static void ExportWraithModel(const std::unique_ptr<WraithModel>& Model, const std::string& ExportPath);
 
     // Exports the asset in the list provided, in async
+public: // headless export calls this directly
     static void ExportSelectedAssets(void* Caller, const std::unique_ptr<std::vector<CoDAsset_t*>>& Assets);
+private:
 
     // A locking mutex for proper async operations
     static std::mutex CodMutex;

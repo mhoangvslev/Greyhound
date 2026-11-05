@@ -239,8 +239,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             if (!HeadlessArgs::Parse(HeadlessArgv, Headless, HeadlessError))
             {
                 if (AttachConsole(ATTACH_PARENT_PROCESS)) { FILE* F = nullptr; freopen_s(&F, "CONOUT$", "w", stderr); }
-                fprintf(stderr, "[headless] bad arguments: %s
-", HeadlessError.c_str());
+                fprintf(stderr, "[headless] bad arguments: %s\n", HeadlessError.c_str());
                 return HeadlessBadArgs;
             }
             if (Headless.Enabled)

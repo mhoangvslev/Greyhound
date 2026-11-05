@@ -3,6 +3,8 @@
 #include "CoDFileSystem.h"
 #include "WebClient.h"
 #include <shared_mutex>
+#include <chrono>
+#include <map>
 
 class CoDCDNDownloader
 {
