@@ -153,6 +153,7 @@
     <ClCompile Include="IPAKSupport.cpp" />
     <ClCompile Include="IWDCache.cpp" />
     <ClCompile Include="IWDSupport.cpp" />
+    <ClCompile Include="HeadlessExport.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="ModelSettings.cpp" />
@@ -230,6 +231,8 @@
     <ClInclude Include="IPAKSupport.h" />
     <ClInclude Include="IWDCache.h" />
     <ClInclude Include="IWDSupport.h" />
+    <ClInclude Include="HeadlessArgs.h" />
+    <ClInclude Include="HeadlessExport.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="ModelSettings.h" />
     <ClInclude Include="GameModernWarfare4.h" />

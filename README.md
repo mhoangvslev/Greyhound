@@ -6,6 +6,30 @@ Greyhound's aim is to provide people access to assets from the games for various
 
 For detailed information such as game support, settings, FAQs, etc. please refer to the [wiki](https://scobalula.github.io/Greyhound/). Work is being done to populate the wiki with information and tutorials so stay tuned!
 
+## Headless export (fork addition)
+
+This fork adds a window-less export mode for scripted extraction from a **running** game (it reads the asset pools from the game process, like the GUI):
+
+```
+greyhound.exe --headless --type anim --filter "*slide*" --out D:\cacheo3 [--formats seanim,cast] [--wait 120] [--overwrite] [--list-only] [--report report.json]
+```
+
+| Option | Meaning |
+|---|---|
+| `--headless` (or `--export`) | enable the mode; without it the GUI starts as usual |
+| `--type` | `anim` (default), `model`, `image`, `sound`, `rawfile`, `material` |
+| `--filter` | name filter, repeatable / comma separated; case-insensitive glob (`*`, `?`), no wildcard = substring; any match exports; none = everything of the type |
+| `--out` | export root (replaces `exported_files`); files land in `<out>/<game>/xanims/...` |
+| `--formats` | anims: `seanim` (default), `cast` |
+| `--wait N` | keep retrying up to N seconds for the game process / the pools to be populated |
+| `--list-only` | print/report the matches, export nothing |
+| `--overwrite` | re-export existing files |
+| `--report` | JSON report (default `<out>/export_report.json`): counts and per-asset status |
+
+Exit codes: `0` ok, `2` bad arguments, `3` no supported game running, `4` game found but pools not located, `5` nothing matched, `6` some exports failed, `7` internal error. Output goes to the parent console and to `TheHoundsLog.txt`.
+
+Anims are exported in centimetres (the game's inches x 2.54), as in the GUI. Argument parsing and filter matching are unit tested: `src\WraithXCOD\Testsun_tests.bat`.
+
 ## Ricochet Info
 
 For titles using Ricochet, [Cordycep](https://github.com/Scobalula/Cordycep) must be used to extract assets.

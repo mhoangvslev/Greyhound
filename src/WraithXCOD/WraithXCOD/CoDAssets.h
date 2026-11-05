@@ -216,6 +216,8 @@ public:
     // Export selected indicies only
     static void ExportSelection(const std::vector<uint32_t>& Indicies, void* Caller = NULL);
 
+    // Headless mode: replaces <exe dir>/exported_files as the export root when not empty
+    static std::string ExportRootOverride;
     // The latest export path
     static std::string LatestExportPath;
 

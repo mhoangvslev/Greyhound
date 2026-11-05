@@ -142,6 +142,7 @@ ExportProgressHandler CoDAssets::OnExportProgress = nullptr;
 ExportStatusHandler CoDAssets::OnExportStatus = nullptr;
 
 // Set last path
+std::string CoDAssets::ExportRootOverride;
 std::string CoDAssets::LatestExportPath = "";
 
 // Set game directory
@@ -1289,7 +1290,7 @@ bool CoDAssets::LocateGameInfo()
 std::string CoDAssets::BuildExportPath(const CoDAsset_t* Asset)
 {
     // Build the export path
-    auto ApplicationPath = FileSystems::CombinePath(FileSystems::GetApplicationPath(), "exported_files");
+    auto ApplicationPath = ExportRootOverride.empty() ? FileSystems::CombinePath(FileSystems::GetApplicationPath(), "exported_files") : ExportRootOverride;
 
     // Append the game directory
     switch (GameID)

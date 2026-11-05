@@ -16,6 +16,7 @@
 #include "WraithUpdate.h"
 
 #include "MainWindow.h"
+#include "HeadlessExport.h"
 
 // The resource file
 #include "resource.h"
@@ -228,6 +229,22 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             {
                 CoDAssets::VerifiedHashes = true;
             }
+        }
+
+        // Headless export mode (no window): --headless / --export, see HeadlessArgs.h and the README
+        {
+            std::vector<std::string> HeadlessArgv(argv, argv + argc);
+            HeadlessOptions Headless;
+            std::string HeadlessError;
+            if (!HeadlessArgs::Parse(HeadlessArgv, Headless, HeadlessError))
+            {
+                if (AttachConsole(ATTACH_PARENT_PROCESS)) { FILE* F = nullptr; freopen_s(&F, "CONOUT$", "w", stderr); }
+                fprintf(stderr, "[headless] bad arguments: %s
+", HeadlessError.c_str());
+                return HeadlessBadArgs;
+            }
+            if (Headless.Enabled)
+                return HeadlessExport::Run(Headless);
         }
 
         // Clean up files
