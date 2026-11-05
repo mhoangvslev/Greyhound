@@ -36,6 +36,10 @@ int main()
     CHECK(!Parse({ "g", "--headless", "--out", "o", "--wait", "-3" }, O, E));
     CHECK(!Parse({ "g", "--headless", "--out" }, O, E));
 
+    CHECK(Parse({ "g", "--headless", "--offline", "--zone-dir", "Z", "--zones", "core_common,zm_zod" }, O, E) && O.Offline && O.ZoneDir == "Z" && O.Zones.size() == 2);
+    CHECK(!Parse({ "g", "--headless", "--offline", "--out", "o" }, O, E) && E.find("--zone-dir") != std::string::npos);
+    CHECK(Parse({ "g", "--headless", "--out", "o" }, O, E) && !O.Offline);
+
     std::printf(Fails ? "%d FAILED\n" : "all passed\n", Fails);
     return Fails ? 1 : 0;
 }

@@ -7,6 +7,7 @@
 #include <thread>
 
 #include "HeadlessExport.h"
+#include "BO3FastFile.h"
 #include "CoDAssets.h"
 #include "FileSystems.h"
 #include "SettingsManager.h"
@@ -113,6 +114,26 @@ namespace
 int HeadlessExport::Run(const HeadlessOptions& O)
 {
     AttachConsoleOutput();
+
+    if (O.Offline)
+    {
+        // Offline: no game process, no WraithX API. Only the zone manifest can be read so far (see OFFLINE.md);
+        // exporting asset bodies is not implemented and says so instead of pretending.
+        int Code = 0;
+        auto Json = BO3FF::ListZones(O.ZoneDir, BO3FF::FindZoneFiles(O.ZoneDir, O.Zones), Code);
+        std::fputs(Json.c_str(), stdout);
+        if (!O.ReportPath.empty())
+        {
+            std::ofstream F(O.ReportPath, std::ios::binary | std::ios::trunc);
+            if (F) F << Json;
+        }
+        if (Code == 0 && !O.ListOnly)
+        {
+            Say("offline export of asset bodies is not implemented (only --list-only); see OFFLINE.md");
+            return HeadlessOfflineUnsupported;
+        }
+        return Code;
+    }
 
     if (!WraithX::InitializeAPI(true))
     {

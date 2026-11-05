@@ -28,7 +28,14 @@ greyhound.exe --headless --type anim --filter "*slide*" --out D:\cacheo3 [--for
 
 Exit codes: `0` ok, `2` bad arguments, `3` no supported game running, `4` game found but pools not located, `5` nothing matched, `6` some exports failed, `7` internal error. Output goes to the parent console and to `TheHoundsLog.txt`.
 
-Anims are exported in centimetres (the game's inches x 2.54), as in the GUI. Argument parsing and filter matching are unit tested: `src\WraithXCOD\Testsun_tests.bat`.
+Anims are exported in centimetres (the game's inches x 2.54), as in the GUI. Argument parsing and filter matching are unit tested: `src\WraithXCOD\Tests
+un_tests.bat`.
+
+### Offline (no game running)
+
+`greyhound.exe --headless --offline --list-only --zone-dir "<BO3 dir>\zone" [--zones core_common,zm_zod] [--report r.json]` lists the asset
+manifest of BO3 fastfiles straight from disk (nothing is launched, attached or written). Exporting asset bodies offline is not implemented yet
+(exit code `8`). Survey, verified numbers and the gap list: [OFFLINE.md](OFFLINE.md). Standalone build/test: `src\WraithXCOD\Testsuild_offline_cli.bat`, `run_tests.bat`.
 
 ## Ricochet Info
 

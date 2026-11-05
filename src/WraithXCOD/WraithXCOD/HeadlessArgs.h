@@ -20,7 +20,8 @@ enum HeadlessExitCode : int
     HeadlessGameInfoFailed = 4, // game found but its asset pools could not be located
     HeadlessNoMatches = 5,      // game loaded, but no asset matched the filters
     HeadlessExportFailed = 6,   // at least one matching asset failed to export
-    HeadlessInternalError = 7
+    HeadlessInternalError = 7,
+    HeadlessOfflineUnsupported = 8 // --offline asked for something the offline reader cannot do yet (export of asset bodies)
 };
 
 struct HeadlessOptions
@@ -43,6 +44,11 @@ struct HeadlessOptions
     bool ListOnly = false;
     // Re-export files that already exist
     bool Overwrite = false;
+    // --offline: read the game files on disk instead of attaching to a running game (BO3 only so far)
+    bool Offline = false;
+    // BO3 zone directory (<game>\zone) and optional zone names (file name without .ff) to restrict to
+    std::string ZoneDir;
+    std::vector<std::string> Zones;
 };
 
 namespace HeadlessArgs
@@ -127,13 +133,17 @@ namespace HeadlessArgs
                 O.WaitSeconds = (uint32_t)std::stoul(V);
             }
             else if (A == "--list-only") O.ListOnly = true;
+            else if (A == "--offline") O.Offline = true;
+            else if (A == "--zone-dir") { if (!Need(i, "--zone-dir", V)) return false; O.ZoneDir = V; }
+            else if (A == "--zones") { if (!Need(i, "--zones", V)) return false; for (auto& F : SplitList(V)) O.Zones.push_back(F); }
             else if (A == "--overwrite") O.Overwrite = true;
         }
         if (!O.Enabled) return true;
 
         static const char* Types[] = { "anim", "model", "image", "sound", "rawfile", "material" };
         if (std::find(std::begin(Types), std::end(Types), O.AssetType) == std::end(Types)) { Error = "unknown --type " + O.AssetType; return false; }
-        if (O.OutDir.empty() && !O.ListOnly) { Error = "--out is required"; return false; }
+        if (O.Offline && O.ZoneDir.empty()) { Error = "--offline needs --zone-dir <game dir>/zone"; return false; }
+        if (O.OutDir.empty() && !O.ListOnly && !O.Offline) { Error = "--out is required"; return false; }
         for (auto& F : O.Formats)
             if (F != "seanim" && F != "cast") { Error = "unknown format " + F + " (seanim, cast)"; return false; }
         if (O.Formats.empty()) { Error = "--formats is empty"; return false; }
